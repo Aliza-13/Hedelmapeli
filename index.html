@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hedelmäpeli — Korjattu</title>
+  <style>
+    /* Perus */
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding: 18px; }
+    h1 { color: red; text-align:center; margin: 0 0 12px 0; }
+
+    /* Rahakone + pelaa */
+    #Rahakone { display:flex; background:#ffef8a; padding:8px; width:220px; gap:8px; border-radius:6px; }
+    #pelaa button { padding:8px 14px; border-radius:6px; cursor:pointer; }
+
+    /* Pelialusta — sijoitettu sivun oikeaan yläosaan, säädä top/arvoa tarpeen mukaan */
+    .pelialusta {
+      position: absolute;
+      top: 120px;    /* säädä miten ylös haluat */
+      right: 20px;   /* säädä miten kaukana oikeasta reunasta */
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    /* Rullat vaaka-asetukseen */
+    .pelialue {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    /* Yksittäinen rulla — näkyy pinottuna symboleina */
+    .rulla {
+      width: 96px;
+      height: 192px;        /* neljä symbolia, kunkin ~48px */
+      border: 2px solid #333;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f7f7f7;
+      padding: 6px 0;
+      box-sizing: border-box;
+    }
+
+    /* Emoji- tai tekstisymbolit rullissa */
+    .rulla .symboli {
+      font-size: 48px;
+      height: 44px;
+      line-height: 44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+    }
+
+    /* Lukitusalue (kuvat + napit) */
+    .lukitusalue {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .myPicture {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fruit-img {
+      width: 80px;
+      height: auto;
+      border: 4px solid transparent;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .fruit-img.locked {
+      border-color: red;
+    }
+
+    .lock-btn {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      background: #fff;
+      cursor: pointer;
+    }
+    .lock-btn.locked {
+      background: #ffecec;
+      border-color: #f99;
+    }
+
+    /* vähän responsiivisuutta */
+    @media (max-width: 600px) {
+      .pelialusta { right: 8px; top: 160px; }
+      .rulla { width: 72px; height: 160px; }
+      .rulla .symboli { font-size: 38px; height: 40px; }
+      .fruit-img { width: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flex-container">
+    <h1>Hedelmäpeli</h1>
+  </div>
+
+  <br>
+
+  <!-- Rahakone (panos yms.) -->
+  <div id="Rahakone">
+    <form>
+      <label for="raha">Rahasumma</label><br>
+      <input type="number" id="raha" name="raha" value="100"><br>
+      <label for="panos">Panos</label><br>
+      <input type="number" id="panos" name="panos" value="1">
+    </form>
+  </div>
+
+  <br>
+
+  <!-- Pelaa-nappi -->
+  <div id="pelaa">
+    <button type="button">Pelaa</button>
+  </div>
+
+  <!-- Pelialue (sijoitettu oikeaan yläkulmaan CSS:llä) -->
+  <div class="pelialusta" aria-label="Pelialue">
+    <!-- Rullat vierekkäin -->
+    <div class="pelialue" role="group" aria-label="Rullat">
+      <div class="rulla" data-index="0">
+        <div class="symboli">🍒</div>
+        <div class="symboli">🍉</div>
+        <div class="symboli">🍎</div>
+        <div class="symboli">🍐</div>
+      </div>
+
+      <div class="rulla" data-index="1">
+        <div class="symboli">🍒</div>
+        <div class="symboli">🍉</div>
+        <div class="symboli">🍎</div>
+        <div class="symboli">🍐</div>
+      </div>
+
+      <div class="rulla" data-index="2">
+        <div class="symboli">🍒</div>
+        <div class="symboli">🍉</div>
+        <div class="symboli">🍎</div>
+        <div class="symboli">🍐</div>
+      </div>
+
+      <div class="rulla" data-index="3">
+        <div class="symboli">🍒</div>
+        <div class="symboli">🍉</div>
+        <div class="symboli">🍎</div>
+        <div class="symboli">🍐</div>
+      </div>
+    </div>
+
+    <!-- Lukitusalue: kuvat ja napit (koko joukko järjestyksessä) -->
+    <div class="lukitusalue" role="group" aria-label="Lukitse kuvat">
+      <div class="myPicture">
+        <img src="img_apple.png" alt="omena" class="fruit-img">
+        <button type="button" class="lock-btn">Lukitse rulla 1</button>
+      </div>
+
+      <div class="myPicture">
+        <img src="img_cherry.png" alt="kirsikat" class="fruit-img">
+        <button type="button" class="lock-btn">Lukitse rulla 2</button>
+      </div>
+
+      <div class="myPicture">
+        <img src="img_pear.jpg" alt="päärynä" class="fruit-img">
+        <button type="button" class="lock-btn">Lukitse rulla 3</button>
+      </div>
+
+      <div class="myPicture">
+        <img src="img_watermelon.png" alt="vesimeloni" class="fruit-img">
+        <button type="button" class="lock-btn">Lukitse rulla 4</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="hedelma.js"></script>
+</body>
+</html>
